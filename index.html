@@ -1,127 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Input FINISH GOOD</title>
+  <title>Input Produksi FG</title>
   <style>
-    body{font-family:sans-serif;padding:15px;background:#f5f5f5}
-    .card{background:white;padding:15px;border-radius:10px;box-shadow:0 2px 5px #ccc}
-    input,select,button{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:5px;font-size:16px}
-    button{background:#28a745;color:white;border:none;font-weight:bold}
+    *{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;padding:10px;background:#f0f2f5;margin:0}
+    .tabs{display:flex;background:#ddd;border-radius:8px 8px 0 0;overflow:hidden}
+    .tab{flex:1;padding:14px;text-align:center;background:#ddd;border:none;font-weight:bold;font-size:15px;cursor:pointer}
+    .tab.active{background:#28a745;color:white}
+    .card{background:white;padding:15px;border-radius:0 0 10px 10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);display:none}
+    .card.active{display:block}
+    h3{margin-top:0;text-align:center;color:#333}
+    label{font-weight:bold;font-size:14px;margin-top:5px;display:block}
+    input,select,button{width:100%;padding:12px;margin:6px 0 12px 0;border:1px solid #ccc;border-radius:6px;font-size:16px}
+    button{background:#28a745;color:white;border:none;font-weight:bold;cursor:pointer}
     button:active{background:#218838}
+    #msg{text-align:center;font-weight:bold;margin-top:10px;font-size:15px;min-height:24px}
+    .sukses{color:green}.gagal{color:red}
   </style>
 </head>
 <body>
-  <div class="card">
-    <h3>Input FINISH GOOD</h3>
-    <form id="fgForm">
-      <label>TANGGAL</label>
-      <input type="date" name="tanggal" id="tanggal" required>
 
-      <label>SHIFT</label>
-      <select name="shift" required>
-        <option value="">Pilih Shift</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-      </select>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('thermo')">HASIL THERMO</button>
+  <button class="tab" onclick="showTab('trxfg')">TRX FG</button>
+</div>
 
-      <label>PRODUK</label>
-      <select name="produk" required>
-        <option value="">Pilih Produk</option>
-        <option>60 ML JELLY</option>
-        <option>90 ML JELLY</option>
-        <option>6 OZ NATURAL</option>
-        <option>8 OZ NATURAL</option>
-        <option>10 OZ NATURAL</option>
-        <option>12 OZ NATURAL</option>
-        <option>12 OZ NATURAL 7 gr</option>
-        <option>14 OZ NATURAL</option>
-        <option>16 OZ NATURAL</option>
-        <option>BAHAN PRINTING 5,5 gr</option>
-        <option>16 SLIM</option>
-        <option>18 SLIM 9 gr</option>
-        <option>18 SLIM 7,5 gr</option>
-        <option>18 SLIM 7,0 gr</option>
-        <option>22 SLIM 9 gr</option>
-        <option>22 SLIM 8,5 gr</option>
-        <option>22 SLIM 8,0 gr</option>
-        <option>22 SLIM 7,0 gr</option>
-        <option>SLOP PISAH 8,5 gr</option>
-        <option>22 SLIM BAHAN PRINTING 8,0 gr</option>
-        <option>BAHAN PRINTING 8,5 gr</option>
-        <option>18 BIG ISI 50 PCS 7,0 gr</option>
-        <option>18 BIG ISI 25 PCS 7,0 gr</option>
-        <option>22 BIG ISI 50 PCS 7,0 gr</option>
-        <option>22 BIG ISI 50 PCS 8 gr</option>
-        <option>22 BIG ISI 50 PCS 8,5 gr</option>
-        <option>26 BIG 8,0 gr BAHAN PRINTING @800</option>
-        <option>26 BIG ISI 25 PCS 8,0 gr</option>
-        <option>22 BIG ISI 50 PCS 8,0 gr BAHAN PRINTING</option>
-        <option>12 OVAL 5,0 gr ISI 50 PCS</option>
-        <option>14 OVAL 6,0 gr ISI 50 PCS</option>
-        <option>14 OVAL 6,0 GR PRINTING</option>
-        <option>16 OVAL 6,5 gr ISI 50 PCS</option>
-        <option>18 OVAL 7,0 gr ISI 50 PCS</option>
-        <option>22 OVAL 7,0 gr ISI 50 PCS</option>
-        <option>22 OVAL 8,0 gr ISI 50 PCS</option>
-        <option>8 SQUARE</option>
-        <option>12 SQUARE</option>
-        <option>16 SQUARE</option>
-        <option>22 SQUARE</option>
-        <option>8 SQUARE HANYA BODY</option>
-        <option>12 SQUARE HANYA BODY</option>
-        <option>16 SQUARE HANYA BODY</option>
-        <option>22 SQUARE HANYA BODY</option>
-        <option>TUTUP SQUARE</option>
-        <option>10 OZ HALLO REGULER</option>
-        <option>12 OZ HALLO REGULER</option>
-        <option>14 OZ HALLO REGULER</option>
-        <option>16 OZ HALLO REGULER</option>
-        <option>18 OZ HALLO BIG</option>
-        <option>18 OZ HALLO BIG 7GR TRIAL</option>
-        <option>22 OZ HALLO BIG 7GR TRIAL</option>
-        <option>22 OZ HALLO BIG</option>
-        <option>18 BIG HALLO GITAR (HIJAU)</option>
-        <option>22 BIG HALLO GITAR (HIJAU)</option>
-        <option>18 OVAL GITAR (BIRU)</option>
-        <option>22 OVAL GITAR (BIRU)</option>
-        <option>18 BIG HOK GITAR (MERAH)</option>
-        <option>22 BIG HOK GITAR (MERAH)</option>
-        <option>16 PRINTING</option>
-        <option>22 PRINTING</option>
-        <option>18 OZ HALLO SLIM</option>
-        <option>22 OZ HALLO SLIM</option>
-      </select>
+<!-- FORM 1: HASIL THERMO -->
+<div id="thermo" class="card active">
+  <h3>Input HASIL THERMO</h3>
+  <form id="formThermo">
+    <input type="hidden" name="form" value="thermo">
+    <label>TANGGAL</label>
+    <input type="date" name="tanggal" id="tgl1" required>
 
-      <label>BOX</label>
-      <input type="number" name="box" placeholder="Isi jumlah box" required>
+    <label>SHIFT</label>
+    <select name="shift" required>
+      <option value="">Pilih Shift</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
 
-      <button type="submit">SIMPAN</button>
-    </form>
-    <p id="msg"></p>
-  </div>
+    <label>PRODUK</label>
+    <select name="produk" id="produk1" required><option>Loading Produk...</option></select>
+
+    <label>BOX</label>
+    <input type="number" name="box" placeholder="Jumlah Box" required>
+
+    <label>QTY</label>
+    <input type="number" name="qty" placeholder="Jumlah Qty/Pcs" required>
+
+    <label>KETERANGAN</label>
+    <input type="text" name="ket" placeholder="Opsional">
+    <button type="submit">SIMPAN</button>
+  </form>
+</div>
+
+<!-- FORM 2: TRX FG -->
+<div id="trxfg" class="card">
+  <h3>Input TRX FG</h3>
+  <form id="formTrx">
+    <input type="hidden" name="form" value="trxfg">
+    <label>TGL</label>
+    <input type="date" name="tgl" id="tgl2" required>
+
+    <label>NO. SJ</label>
+    <input type="text" name="noSJ" placeholder="No Surat Jalan" required>
+
+    <label>PRODUK</label>
+    <select name="produk2" id="produk2" required><option>Loading Produk...</option></select>
+
+    <label>KIRIM</label>
+    <input type="number" name="kirim" placeholder="Jumlah Kirim" required>
+
+    <label>KETERANGAN</label>
+    <input type="text" name="ket2" placeholder="Opsional">
+
+    <label>NO POL</label>
+    <input type="text" name="noPol" placeholder="Contoh: B 1234 CD">
+
+    <label>DRIVER</label>
+    <input type="text" name="driver" placeholder="Nama Driver">
+    <button type="submit">SIMPAN</button>
+  </form>
+</div>
+
+<p id="msg"></p>
 
 <script>
-  document.getElementById('tanggal').valueAsDate = new Date(); // auto isi tanggal hari ini
+  const scriptURL = 'PASTE_URL_DISINI' // <-- GANTI DENGAN URL APPS SCRIPT KAMU
   
-  const scriptURL = 'PASTE_WEB_APP_URL_DISINI' // <-- ganti dengan URL dari Apps Script
-  
-  document.getElementById('fgForm').addEventListener('submit', e => {
-    e.preventDefault()
-    fetch(scriptURL, { method: 'POST', body: new FormData(e.target)})
-      .then(res => res.json())
-      .then(data => {
-        if(data.status == "sukses"){
-          document.getElementById('msg').innerText = "Data tersimpan!";
-          e.target.reset();
-          document.getElementById('tanggal').valueAsDate = new Date();
-        } else {
-          document.getElementById('msg').innerText = "Gagal: " + data.msg;
+  document.getElementById('tgl1').valueAsDate = new Date();
+  document.getElementById('tgl2').valueAsDate = new Date();
+
+  // Ambil data produk dari Sheet MASTER
+  fetch(scriptURL)
+  .then(res => res.json())
+  .then(produk => {
+      let opt1 = document.getElementById('produk1');
+      let opt2 = document.getElementById('produk2');
+      opt1.innerHTML = '<option value="">Pilih Produk</option>';
+      opt2.innerHTML = '<option value="">Pilih Produk</option>';
+      produk.forEach(p => {
+        if(p != ""){ // skip baris kosong
+          opt1.innerHTML += `<option>${p}</option>`;
+          opt2.innerHTML += `<option>${p}</option>`;
         }
       })
-      .catch(error => document.getElementById('msg').innerText = 'Error!' )
-  })
+  }).catch(err => {
+      document.getElementById('produk1').innerHTML = '<option>Gagal load produk</option>';
+      document.getElementById('produk2').innerHTML = '<option>Gagal load produk</option>';
+  });
+
+  function showTab(id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+    document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  function submitForm(formId){
+    document.getElementById(formId).addEventListener('submit', e => {
+      e.preventDefault();
+      const msg = document.getElementById('msg');
+      msg.className = "";
+      msg.innerText = "Menyimpan...";
+      
+      fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(e.target)})
+      .then(() => {
+          msg.className = "sukses";
+          msg.innerText = "✅ Data tersimpan!";
+          e.target.reset();
+          document.getElementById('tgl1').valueAsDate = new Date();
+          document.getElementById('tgl2').valueAsDate = new Date();
+          setTimeout(()=>msg.innerText="",3000);
+      }).catch(() => { 
+          msg.className = "gagal"; 
+          msg.innerText = "❌ Gagal koneksi ke server" 
+      });
+    })
+  }
+  submitForm('formThermo');
+  submitForm('formTrx');
 </script>
 </body>
 </html>
