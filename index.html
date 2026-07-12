@@ -21,7 +21,6 @@
     #msg{text-align:center;font-weight:bold;margin-top:10px;font-size:15px;min-height:24px;position:fixed;bottom:10px;left:5%;width:90%;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.2)}
     .sukses{color:green}.gagal{color:red}
     
-    /* Area Bukti untuk di screenshot */
     .buktiArea{display:none;background:#f9fff9;padding:15px;border:2px dashed #28a745;border-radius:8px;margin-top:15px}
     .buktiArea h4{text-align:center;margin:0 0 10px 0;color:#28a745}
     .buktiArea table{width:100%;border-collapse:collapse;font-size:14px;background:white}
@@ -62,7 +61,13 @@
     <input type="number" name="qty" placeholder="Jumlah Qty/Pcs" required>
 
     <label>KETERANGAN</label>
-    <input type="text" name="ket" placeholder="Opsional">
+    <select name="ket" required>
+      <option value="">Pilih Keterangan</option>
+      <option value="Customer">Customer</option>
+      <option value="Pandaan">Pandaan</option>
+      <option value="Krebet">Krebet</option>
+    </select>
+    
     <button type="submit">SIMPAN DATA</button>
   </form>
   <div id="buktiThermo" class="buktiArea"></div>
@@ -86,7 +91,12 @@
     <input type="number" name="kirim" placeholder="Jumlah Kirim" required>
 
     <label>KETERANGAN</label>
-    <input type="text" name="ket2" placeholder="Opsional">
+    <select name="ket2" required>
+      <option value="">Pilih Keterangan</option>
+      <option value="Customer">Customer</option>
+      <option value="Pandaan">Pandaan</option>
+      <option value="Krebet">Krebet</option>
+    </select>
 
     <label>NO POL</label>
     <input type="text" name="noPol" placeholder="Contoh: B 1234 CD">
@@ -100,7 +110,6 @@
 
 <p id="msg"></p>
 
-<!-- Library untuk convert HTML ke Gambar -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   const scriptURL = 'PASTE_URL_DISINI' // <-- GANTI DENGAN URL APPS SCRIPT KAMU
@@ -108,7 +117,6 @@
   document.getElementById('tgl1').valueAsDate = new Date();
   document.getElementById('tgl2').valueAsDate = new Date();
 
-  // Ambil data produk dari Sheet MASTER
   fetch(scriptURL)
   .then(res => res.json())
   .then(produk => {
@@ -144,10 +152,7 @@
       fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: formData})
       .then(() => {
           msg.className = "sukses"; msg.innerText = "✅ Data tersimpan!";
-          
-          // Buat area bukti
           buatBukti(formData, buktiId);
-          
           e.target.reset();
           document.getElementById('tgl1').valueAsDate = new Date();
           document.getElementById('tgl2').valueAsDate = new Date();
@@ -167,13 +172,13 @@
       html += `<tr><td>Produk</td><td>: ${formData.get('produk')}</td></tr>`;
       html += `<tr><td>Box</td><td>: ${formData.get('box')}</td></tr>`;
       html += `<tr><td>Qty</td><td>: ${formData.get('qty')}</td></tr>`;
-      html += `<tr><td>Ket</td><td>: ${formData.get('ket') || '-'}</td></tr>`;
+      html += `<tr><td>Keterangan</td><td>: ${formData.get('ket')}</td></tr>`;
     } else {
       html += `<tr><td>Tgl</td><td>: ${formData.get('tgl')}</td></tr>`;
       html += `<tr><td>No SJ</td><td>: ${formData.get('noSJ')}</td></tr>`;
       html += `<tr><td>Produk</td><td>: ${formData.get('produk2')}</td></tr>`;
       html += `<tr><td>Kirim</td><td>: ${formData.get('kirim')}</td></tr>`;
-      html += `<tr><td>Ket</td><td>: ${formData.get('ket2') || '-'}</td></tr>`;
+      html += `<tr><td>Keterangan</td><td>: ${formData.get('ket2')}</td></tr>`;
       html += `<tr><td>No Pol</td><td>: ${formData.get('noPol') || '-'}</td></tr>`;
       html += `<tr><td>Driver</td><td>: ${formData.get('driver') || '-'}</td></tr>`;
     }
@@ -187,13 +192,10 @@
   function downloadDanShare(buktiId){
     const element = document.getElementById(buktiId);
     html2canvas(element, {scale: 2}).then(canvas => {
-      // 1. Download Gambar
       const link = document.createElement('a');
       link.download = 'bukti-input-' + Date.now() + '.png';
       link.href = canvas.toDataURL("image/png");
       link.click();
-
-      // 2. Share ke WA
       setTimeout(()=>{
         const pesan = encodeURIComponent("Berikut Bukti Input Data FG");
         window.open(`https://wa.me/?text=${pesan}`, '_blank');
