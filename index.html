@@ -1,117 +1,208 @@
-const SHEET_ID = '1fz2fBqPcp9eYtNAEhvCGwMd55JRppbpGXLByZ3J1x2A';
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Input Produksi FG</title>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;padding:10px;background:#f0f2f5;margin:0}
+    .tabs{display:flex;background:#ddd;border-radius:8px 8px 0 0;overflow:hidden;position:sticky;top:0;z-index:10}
+    .tab{flex:1;padding:14px;text-align:center;background:#ddd;border:none;font-weight:bold;font-size:15px;cursor:pointer}
+    .tab.active{background:#28a745;color:white}
+    .card{background:white;padding:15px;border-radius:0 0 10px 10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);display:none;margin-bottom:70px}
+    .card.active{display:block}
+    h3{margin-top:0;text-align:center;color:#333}
+    label{font-weight:bold;font-size:14px;margin-top:5px;display:block}
+    input,select,button{width:100%;padding:12px;margin:6px 0 12px 0;border:1px solid #ccc;border-radius:6px;font-size:16px}
+    button{background:#28a745;color:white;border:none;font-weight:bold;cursor:pointer}
+    button:active{background:#218838}
+    .btn-wa{background:#25D366} .btn-wa:active{background:#1ebe5a}
+    #msg{text-align:center;font-weight:bold;margin-top:10px;font-size:15px;min-height:24px;position:fixed;bottom:10px;left:5%;width:90%;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.2)}
+    .sukses{color:green}.gagal{color:red}
+    
+    /* Area Bukti untuk di screenshot */
+    .buktiArea{display:none;background:#f9fff9;padding:15px;border:2px dashed #28a745;border-radius:8px;margin-top:15px}
+    .buktiArea h4{text-align:center;margin:0 0 10px 0;color:#28a745}
+    .buktiArea table{width:100%;border-collapse:collapse;font-size:14px;background:white}
+    .buktiArea td{padding:8px;border-bottom:1px solid #eee}
+    .buktiArea td:first-child{font-weight:bold;width:40%}
+  </style>
+</head>
+<body>
 
-function toNum(val) {
-  if (val === '' || val === null || val === undefined) return val;
-  const str = val.toString().replace(',', '.');
-  const num = parseFloat(str);
-  return isNaN(num)? val : num;
-}
+<div class="tabs">
+  <button class="tab active" onclick="showTab('thermo')">HASIL THERMO</button>
+  <button class="tab" onclick="showTab('trxfg')">TRX FG</button>
+</div>
 
-function makeOutput(text) {
-  return ContentService.createTextOutput(text).setMimeType(ContentService.MimeType.TEXT);
-}
+<!-- FORM 1: HASIL THERMO -->
+<div id="thermo" class="card active">
+  <h3>Input HASIL THERMO</h3>
+  <form id="formThermo">
+    <input type="hidden" name="form" value="thermo">
+    <label>TANGGAL</label>
+    <input type="date" name="tanggal" id="tgl1" required>
 
-function makeJsonOutput(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
-}
+    <label>SHIFT</label>
+    <select name="shift" required>
+      <option value="">Pilih Shift</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+    </select>
 
-// CARI BARIS KOSONG PERTAMA DARI ATAS
-function getFirstEmptyRow(sheet) {
-  const maxRows = sheet.getMaxRows();
-  const values = sheet.getRange(2, 1, maxRows-1, 1).getValues();
-  for (let i = 0; i < values.length; i++) {
-    if (values[i][0] === '' || values[i][0] === null) return i + 2;
-  }
-  return sheet.getLastRow() + 1;
-}
+    <label>PRODUK</label>
+    <select name="produk" id="produk1" required><option>Loading Produk...</option></select>
 
-function doPost(e) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const data = JSON.parse(e.postData.contents);
-  const sheet = ss.getSheetByName(data._sheet);
-  if (!sheet) return makeOutput('Sheet not found');
+    <label>BOX</label>
+    <input type="number" name="box" placeholder="Jumlah Box" required>
 
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  const targetRow = getFirstEmptyRow(sheet);
+    <label>QTY</label>
+    <input type="number" name="qty" placeholder="Jumlah Qty/Pcs" required>
 
-  // Simpan data ke baris kosong pertama
-  headers.forEach(function(h, idx) {
-    if (h!== '' && data[h]!== undefined) {
-      let val = data[h];
-      // auto convert angka
-      if (['Box','Kirim'].includes(h)) val = toNum(val);
-      sheet.getRange(targetRow, idx + 1).setValue(val);
-    }
+    <label>KETERANGAN</label>
+    <input type="text" name="ket" placeholder="Opsional">
+    <button type="submit">SIMPAN DATA</button>
+  </form>
+  <div id="buktiThermo" class="buktiArea"></div>
+</div>
+
+<!-- FORM 2: TRX FG -->
+<div id="trxfg" class="card">
+  <h3>Input TRX FG</h3>
+  <form id="formTrx">
+    <input type="hidden" name="form" value="trxfg">
+    <label>TGL</label>
+    <input type="date" name="tgl" id="tgl2" required>
+
+    <label>NO. SJ</label>
+    <input type="text" name="noSJ" placeholder="No Surat Jalan" required>
+
+    <label>PRODUK</label>
+    <select name="produk2" id="produk2" required><option>Loading Produk...</option></select>
+
+    <label>KIRIM</label>
+    <input type="number" name="kirim" placeholder="Jumlah Kirim" required>
+
+    <label>KETERANGAN</label>
+    <input type="text" name="ket2" placeholder="Opsional">
+
+    <label>NO POL</label>
+    <input type="text" name="noPol" placeholder="Contoh: B 1234 CD">
+
+    <label>DRIVER</label>
+    <input type="text" name="driver" placeholder="Nama Driver">
+    <button type="submit">SIMPAN DATA</button>
+  </form>
+  <div id="buktiTrx" class="buktiArea"></div>
+</div>
+
+<p id="msg"></p>
+
+<!-- Library untuk convert HTML ke Gambar -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const scriptURL = 'PASTE_URL_DISINI' // <-- GANTI DENGAN URL APPS SCRIPT KAMU
+  
+  document.getElementById('tgl1').valueAsDate = new Date();
+  document.getElementById('tgl2').valueAsDate = new Date();
+
+  // Ambil data produk dari Sheet MASTER
+  fetch(scriptURL)
+  .then(res => res.json())
+  .then(produk => {
+      let opt1 = document.getElementById('produk1');
+      let opt2 = document.getElementById('produk2');
+      opt1.innerHTML = '<option value="">Pilih Produk</option>';
+      opt2.innerHTML = '<option value="">Pilih Produk</option>';
+      produk.forEach(p => {
+        if(p != ""){ 
+          opt1.innerHTML += `<option>${p}</option>`;
+          opt2.innerHTML += `<option>${p}</option>`;
+        }
+      })
+  }).catch(err => {
+      document.getElementById('produk1').innerHTML = '<option>Gagal load produk</option>';
+      document.getElementById('produk2').innerHTML = '<option>Gagal load produk</option>';
   });
 
-  // Bikin link download PDF bukti
-  const pdfUrl = createPdfBukti(data, targetRow);
-
-  return makeJsonOutput({
-    status: 'OK',
-    row: targetRow,
-    pdfUrl: pdfUrl,
-    waText: encodeURIComponent(`Bukti Input ${data._sheet}\nTanggal: ${data.Tanggal}\nProduk: ${data.Produk || data['Nama Barang']}\nLink: ${pdfUrl}`)
-  });
-}
-
-function doGet(e) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-
-  // Handler ambil data MASTER untuk dropdown
-  if (e.parameter.action === 'getMaster') {
-    const sheet = ss.getSheetByName('MASTER');
-    if (!sheet) return makeJsonOutput({error:'MASTER not found'});
-    const data = sheet.getDataRange().getValues();
-    return makeJsonOutput({data: data});
+  function showTab(id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+    document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
+    document.getElementById(id).classList.add('active');
   }
 
-  // Handler ambil data untuk edit
-  const sheet = ss.getSheetByName(e.parameter.sheet);
-  if (!sheet) return makeJsonOutput({error:'Sheet not found'});
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  const allData = sheet.getRange(2, 1, sheet.getLastRow()-1, sheet.getLastColumn()).getValues();
-
-  for (let i = 0; i < allData.length; i++) {
-    const rowTgl = allData[i][0];
-    const rowProduk = allData[i][3]; // kolom Produk/Nama Barang
-    if (Utilities.formatDate(new Date(rowTgl), Session.getScriptTimeZone(), 'yyyy-MM-dd') === e.parameter.tgl
-        && rowProduk === e.parameter.produk) {
-      const result = {};
-      headers.forEach(function(h, idx) { if (h) result[h] = allData[i][idx]; });
-      return makeJsonOutput(result);
+  function submitForm(formId, buktiId){
+    document.getElementById(formId).addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const msg = document.getElementById('msg');
+      msg.className = ""; msg.innerText = "Menyimpan...";
+      
+      fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: formData})
+      .then(() => {
+          msg.className = "sukses"; msg.innerText = "✅ Data tersimpan!";
+          
+          // Buat area bukti
+          buatBukti(formData, buktiId);
+          
+          e.target.reset();
+          document.getElementById('tgl1').valueAsDate = new Date();
+          document.getElementById('tgl2').valueAsDate = new Date();
+          setTimeout(()=>msg.innerText="",4000);
+      }).catch(() => { msg.className = "gagal"; msg.innerText = "❌ Gagal koneksi ke server" });
+    })
+  }
+  
+  function buatBukti(formData, buktiId){
+    const area = document.getElementById(buktiId);
+    let judul = formData.get('form') == 'thermo' ? 'HASIL THERMO' : 'TRX FG';
+    let html = `<h4>BUKTI INPUT ${judul}</h4><table>`;
+    
+    if(formData.get('form') == 'thermo'){
+      html += `<tr><td>Tanggal</td><td>: ${formData.get('tanggal')}</td></tr>`;
+      html += `<tr><td>Shift</td><td>: ${formData.get('shift')}</td></tr>`;
+      html += `<tr><td>Produk</td><td>: ${formData.get('produk')}</td></tr>`;
+      html += `<tr><td>Box</td><td>: ${formData.get('box')}</td></tr>`;
+      html += `<tr><td>Qty</td><td>: ${formData.get('qty')}</td></tr>`;
+      html += `<tr><td>Ket</td><td>: ${formData.get('ket') || '-'}</td></tr>`;
+    } else {
+      html += `<tr><td>Tgl</td><td>: ${formData.get('tgl')}</td></tr>`;
+      html += `<tr><td>No SJ</td><td>: ${formData.get('noSJ')}</td></tr>`;
+      html += `<tr><td>Produk</td><td>: ${formData.get('produk2')}</td></tr>`;
+      html += `<tr><td>Kirim</td><td>: ${formData.get('kirim')}</td></tr>`;
+      html += `<tr><td>Ket</td><td>: ${formData.get('ket2') || '-'}</td></tr>`;
+      html += `<tr><td>No Pol</td><td>: ${formData.get('noPol') || '-'}</td></tr>`;
+      html += `<tr><td>Driver</td><td>: ${formData.get('driver') || '-'}</td></tr>`;
     }
+    html += `</table><p style="font-size:12px;text-align:center;margin-top:10px">Waktu: ${new Date().toLocaleString('id-ID')}</p>`;
+    html += `<button class="btn-wa" onclick="downloadDanShare('${buktiId}')">📱 DOWNLOAD & SHARE KE WA</button>`;
+    area.innerHTML = html;
+    area.style.display = 'block';
+    area.scrollIntoView({behavior: "smooth"});
   }
-  return makeJsonOutput({error:'Data tidak ditemukan'});
-}
 
-// FUNGSI BIKIN PDF BUKTI
-function createPdfBukti(data, row) {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const tempSheet = ss.insertSheet('TEMP_BUKTI_' + new Date().getTime());
+  function downloadDanShare(buktiId){
+    const element = document.getElementById(buktiId);
+    html2canvas(element, {scale: 2}).then(canvas => {
+      // 1. Download Gambar
+      const link = document.createElement('a');
+      link.download = 'bukti-input-' + Date.now() + '.png';
+      link.href = canvas.toDataURL("image/png");
+      link.click();
 
-  tempSheet.getRange(1,1).setValue('BUKTI INPUT DATA');
-  tempSheet.getRange(2,1).setValue('Sheet:'); tempSheet.getRange(2,2).setValue(data._sheet);
-  tempSheet.getRange(3,1).setValue('Tanggal:'); tempSheet.getRange(3,2).setValue(data.Tanggal);
-
-  let r = 4;
-  for (let key in data) {
-    if (key.startsWith('_')) continue;
-    tempSheet.getRange(r,1).setValue(key + ':');
-    tempSheet.getRange(r,2).setValue(data[key]);
-    r++;
+      // 2. Share ke WA
+      setTimeout(()=>{
+        const pesan = encodeURIComponent("Berikut Bukti Input Data FG");
+        window.open(`https://wa.me/?text=${pesan}`, '_blank');
+      }, 500)
+    });
   }
-  tempSheet.getRange(r+1,1).setValue('Row: ' + row);
-  tempSheet.getRange(r+2,1).setValue('Waktu: ' + new Date());
 
-  const url = ss.getUrl().replace('/edit', '/export?format=pdf&gid=' + tempSheet.getSheetId());
-  const blob = UrlFetchApp.fetch(url, {
-    headers: { 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken() }
-  }).getBlob().setName('Bukti_' + data._sheet + '_' + row + '.pdf');
-
-  const file = DriveApp.createFile(blob);
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-
-  ss.deleteSheet(tempSheet);
-  return file.getUrl();
-}
+  submitForm('formThermo', 'buktiThermo');
+  submitForm('formTrx', 'buktiTrx');
+</script>
+</body>
+</html>
