@@ -7,6 +7,10 @@ function toNum(val) {
   return isNaN(num)? val : num;
 }
 
+function makeOutput(text) {
+  return ContentService.createTextOutput(text).setMimeType(ContentService.MimeType.TEXT);
+}
+
 function makeJsonOutput(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
@@ -21,73 +25,27 @@ function getFirstEmptyRow(sheet) {
   return sheet.getLastRow() + 1;
 }
 
-// AMBIL DATA NAMA PRODUK DARI MASTER KOLOM "nama produk"
-function getMasterProduk() {
-  const ss = SpreadsheetApp.openById(SHEET_ID);
-  const sheet = ss.getSheetByName('MASTER');
-  if (!sheet) return [];
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  const namaIdx = headers.indexOf('nama produk');
-  if (namaIdx < 0) return [];
-  const values = sheet.getRange(2, namaIdx+1, sheet.getLastRow()-1, 1).getValues();
-  return values.flat().filter(String);
-}
-
 function doPost(e) {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const data = JSON.parse(e.postData.contents);
   const sheet = ss.getSheetByName(data._sheet);
-  if (!sheet) return makeJsonOutput({status:'ERROR', msg:'Sheet not found'});
+  if (!sheet) return makeOutput('Sheet not found');
 
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  let insertedRows = [];
-  let pdfUrls = [];
-
-  // MODE KIRIM BANYAK PRODUK SEKALIGUS
-  if (data.items && Array.isArray(data.items)) {
-    data.items.forEach(function(item) {
-      const targetRow = getFirstEmptyRow(sheet);
-      const rowData = {
-        'Tanggal': data.Tanggal,
-        'Nomer Surat Jalan': data['Nomer Surat Jalan'],
-        'Nama Barang': item['Nama Barang'],
-        'Kirim': item['Kirim'],
-        'Keterangan': data.Keterangan,
-        'No Polisi': data['No Polisi'],
-        'Driver': data.Driver
-      };
-
-      headers.forEach(function(h, idx) {
-        if (h!== '' && rowData[h]!== undefined) {
-          let val = rowData[h];
-          if (['Kirim','Box'].includes(h)) val = toNum(val);
-          sheet.getRange(targetRow, idx + 1).setValue(val);
-        }
-      });
-
-      const pdfUrl = createPdfBukti(rowData, targetRow, data._sheet);
-      insertedRows.push(targetRow);
-      pdfUrls.push(pdfUrl);
-    });
-
-    return makeJsonOutput({
-      status: 'OK',
-      rows: insertedRows,
-      pdfUrls: pdfUrls,
-      waText: encodeURIComponent(`Bukti Input ${data._sheet}\nTanggal: ${data.Tanggal}\nTotal Barang: ${data.items.length}\nLink: ${pdfUrls[0]}`)
-    });
-  }
-
-  // MODE KIRIM 1 BARIS - untuk input Hasil Prod.
   const targetRow = getFirstEmptyRow(sheet);
+
+  // Simpan data ke baris kosong pertama
   headers.forEach(function(h, idx) {
     if (h!== '' && data[h]!== undefined) {
       let val = data[h];
+      // auto convert angka
       if (['Box','Kirim'].includes(h)) val = toNum(val);
       sheet.getRange(targetRow, idx + 1).setValue(val);
     }
   });
-  const pdfUrl = createPdfBukti(data, targetRow, data._sheet);
+
+  // Bikin link download PDF bukti
+  const pdfUrl = createPdfBukti(data, targetRow);
 
   return makeJsonOutput({
     status: 'OK',
@@ -100,24 +58,25 @@ function doPost(e) {
 function doGet(e) {
   const ss = SpreadsheetApp.openById(SHEET_ID);
 
-  // UNTUK AMBIL DROPDOWN NAMA PRODUK DARI MASTER
-  if (e.parameter.action === 'getBarang') {
-    const list = getMasterProduk();
-    return makeJsonOutput({status:'OK', data: list});
+  // Handler ambil data MASTER untuk dropdown
+  if (e.parameter.action === 'getMaster') {
+    const sheet = ss.getSheetByName('MASTER');
+    if (!sheet) return makeJsonOutput({error:'MASTER not found'});
+    const data = sheet.getDataRange().getValues();
+    return makeJsonOutput({data: data});
   }
 
-  // Handler cari data untuk edit
+  // Handler ambil data untuk edit
   const sheet = ss.getSheetByName(e.parameter.sheet);
   if (!sheet) return makeJsonOutput({error:'Sheet not found'});
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
   const allData = sheet.getRange(2, 1, sheet.getLastRow()-1, sheet.getLastColumn()).getValues();
-  const tgl = e.parameter.tgl;
-  const produk = e.parameter.produk;
 
   for (let i = 0; i < allData.length; i++) {
     const rowTgl = allData[i][0];
-    const rowProduk = allData[i][2]; // Nama Barang ada di kolom ke 3
-    if (Utilities.formatDate(new Date(rowTgl), Session.getScriptTimeZone(), 'yyyy-MM-dd') === tgl && rowProduk === produk) {
+    const rowProduk = allData[i][3]; // kolom Produk/Nama Barang
+    if (Utilities.formatDate(new Date(rowTgl), Session.getScriptTimeZone(), 'yyyy-MM-dd') === e.parameter.tgl
+        && rowProduk === e.parameter.produk) {
       const result = {};
       headers.forEach(function(h, idx) { if (h) result[h] = allData[i][idx]; });
       return makeJsonOutput(result);
@@ -127,12 +86,12 @@ function doGet(e) {
 }
 
 // FUNGSI BIKIN PDF BUKTI
-function createPdfBukti(data, row, sheetName) {
+function createPdfBukti(data, row) {
   const ss = SpreadsheetApp.openById(SHEET_ID);
   const tempSheet = ss.insertSheet('TEMP_BUKTI_' + new Date().getTime());
 
   tempSheet.getRange(1,1).setValue('BUKTI INPUT DATA');
-  tempSheet.getRange(2,1).setValue('Sheet:'); tempSheet.getRange(2,2).setValue(sheetName);
+  tempSheet.getRange(2,1).setValue('Sheet:'); tempSheet.getRange(2,2).setValue(data._sheet);
   tempSheet.getRange(3,1).setValue('Tanggal:'); tempSheet.getRange(3,2).setValue(data.Tanggal);
 
   let r = 4;
@@ -148,7 +107,7 @@ function createPdfBukti(data, row, sheetName) {
   const url = ss.getUrl().replace('/edit', '/export?format=pdf&gid=' + tempSheet.getSheetId());
   const blob = UrlFetchApp.fetch(url, {
     headers: { 'Authorization': 'Bearer ' + ScriptApp.getOAuthToken() }
-  }).getBlob().setName('Bukti_' + sheetName + '_' + row + '.pdf');
+  }).getBlob().setName('Bukti_' + data._sheet + '_' + row + '.pdf');
 
   const file = DriveApp.createFile(blob);
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
