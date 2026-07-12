@@ -51,6 +51,25 @@
       <option value="3">3</option>
     </select>
 
+    <label>TF</label>
+    <select name="tf" required>
+      <option value="">Pilih TF</option>
+      <option value="TF4">TF4</option>
+      <option value="TF5">TF5</option>
+      <option value="TF6">TF6</option>
+      <option value="TF7">TF7</option>
+      <option value="TF8">TF8</option>
+      <option value="TF9">TF9</option>
+      <option value="TF10">TF10</option>
+      <option value="TF11P">TF11P</option>
+      <option value="TF11L">TF11L</option>
+      <option value="TF12">TF12</option>
+      <option value="TF13">TF13</option>
+      <option value="TF14">TF14</option>
+      <option value="TF15">TF15</option>
+      <option value="TF16">TF16</option>
+    </select>
+
     <label>PRODUK</label>
     <select name="produk" id="produk1" required><option>Loading Produk...</option></select>
 
@@ -169,6 +188,7 @@
     if(formData.get('form') == 'thermo'){
       html += `<tr><td>Tanggal</td><td>: ${formData.get('tanggal')}</td></tr>`;
       html += `<tr><td>Shift</td><td>: ${formData.get('shift')}</td></tr>`;
+      html += `<tr><td>TF</td><td>: ${formData.get('tf')}</td></tr>`;
       html += `<tr><td>Produk</td><td>: ${formData.get('produk')}</td></tr>`;
       html += `<tr><td>Box</td><td>: ${formData.get('box')}</td></tr>`;
       html += `<tr><td>Qty</td><td>: ${formData.get('qty')}</td></tr>`;
