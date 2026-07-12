@@ -2,25 +2,24 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>App TRX FG</title>
+  <title>App TRX Multi</title>
   <style>
     body{font-family:Arial; padding:15px; background:#f5f5f5; margin:0}
-  .card{background:white; padding:15px; border-radius:10px; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+  .card{background:white; padding:15px; border-radius:10px; margin-bottom:15px}
     input, select, button{width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box}
-    button{background:#2196F3; color:white; border:none; cursor:pointer}
-    button.danger{background:#f44336}
+    button{background:#2196F3; color:white; border:none}
     button.success{background:#4CAF50}
-    table{width:100%; border-collapse:collapse; font-size:12px}
-    th,td{border:1px solid #ddd; padding:6px; text-align:left}
+    button.danger{background:#f44336}
+    table{width:100%; font-size:12px; border-collapse:collapse}
+    th,td{border:1px solid #ddd; padding:6px}
     th{background:#2196F3; color:white}
- .hidden{display:none}
- .item{border:1px dashed #ccc; padding:10px; margin:5px 0; border-radius:5px}
+  .hidden{display:none}
+  .item-box{border:1px dashed #2196F3; padding:10px; margin:5px 0; border-radius:5px}
   </style>
 </head>
 <body>
 
-<div id="pageLogin" class="card">
-  <h2>Login</h2>
+<div id="pageLogin" class="card"><h2>Login</h2>
   <input type="text" id="user" placeholder="Username">
   <input type="password" id="pass" placeholder="Password">
   <button onclick="login()">Masuk</button>
@@ -28,153 +27,110 @@
 
 <div id="pageMain" class="hidden">
   <h2>Halo <span id="namaUser"></span></h2>
-
   <div class="card">
-    <h3>Input TRX FG KIRIM</h3>
+    <h3>Input SJ</h3>
+    <select id="pilihSheet"><option value="TRX FG KIRIM">TRX FG KIRIM</option><option value="HASIL THERMO">HASIL THERMO</option></select>
     <input type="date" id="tanggal">
     <input type="text" id="noSJ" placeholder="No Surat Jalan">
+    <input type="text" id="noPol" placeholder="No Polisi">
     <input type="text" id="driver" placeholder="Driver">
     <hr>
-    <select id="spnBarang"></select>
-    <input type="number" id="txtBox" placeholder="Jumlah Box">
-    <label id="lblTotal"><b>Total QTY: 0</b></label>
-    <button onclick="tambahItem()">+ Tambah ke List</button>
-    <div id="listItem"></div>
-    <button class="success" onclick="simpanTRX()">Simpan Semua</button>
+    <h4>Tambah Barang</h4>
+    <input type="text" id="namaBarang" placeholder="Nama Barang">
+    <input type="number" id="kirim" placeholder="Jumlah Kirim/QTY">
+    <button onclick="tambahBarang()">+ Tambah ke List</button>
+    <div id="listBarang"></div>
+    <button class="success" onclick="simpan()">Simpan Semua Barang</button>
   </div>
 
   <div class="card">
-    <h3>Tambah Produk Master</h3>
-    <input type="text" id="namaProduk" placeholder="Nama Produk">
-    <input type="number" id="isiProduk" placeholder="Isi per Box">
-    <button onclick="tambahProduk()">Simpan Produk</button>
-  </div>
-
-  <div class="card">
-    <h3>Riwayat Data</h3>
-    <select id="pilihSheet"><option value="TRX FG KIRIM">TRX FG KIRIM</option><option value="HASIL THERMO">HASIL THERMO</option></select>
+    <h3>Riwayat</h3>
     <input type="date" id="filterTanggal">
-    <button onclick="loadRiwayat()">Cari</button>
+    <button onclick="loadRiwayat()">Refresh</button>
     <div id="tabelRiwayat"></div>
   </div>
-
   <button class="danger" onclick="logout()">Logout</button>
 </div>
 
 <script>
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyVCvLdqOVi3B2x3Zc20ihwnK3dJat0PjMb2e8LQQ3F3oZwd73XAiv54crvb84cr_GTxg/exec"; // GANTI INI
-let listBarang = [];
-let listItems = [];
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyVCvLdqOVi3B2x3Zc20ihwnK3dJat0PjMb2e8LQQ3F3oZwd73XAiv54crvb84cr_GTxg/exec";
 let loginUser = "";
+let listItems = [];
 
 window.onload = function() {
   document.getElementById('tanggal').valueAsDate = new Date();
   document.getElementById('filterTanggal').valueAsDate = new Date();
-  document.getElementById('txtBox').oninput = hitung;
-  document.getElementById('spnBarang').onchange = hitung;
 }
 
 async function login(){
-  const user = document.getElementById('user').value;
-  const pass = document.getElementById('pass').value;
-  if(user === "" || pass === "") return alert("Isi username dan password");
-  const res = await fetch(`${WEBAPP_URL}?action=login&user=${user}&pass=${pass}`);
+  const res = await fetch(`${WEBAPP_URL}?action=login&user=${document.getElementById('user').value}&pass=${document.getElementById('pass').value}`);
   const json = await res.json();
   if(json.status === "OK"){
-    loginUser = json.nama;
-    document.getElementById('namaUser').innerText = loginUser;
+    loginUser = json.nama; document.getElementById('namaUser').innerText = loginUser;
     document.getElementById('pageLogin').classList.add('hidden');
     document.getElementById('pageMain').classList.remove('hidden');
-    getBarang();
     loadRiwayat();
-  } else {
-    alert(json.msg);
-  }
+  } else { alert(json.msg); }
 }
-function logout(){
-  document.getElementById('pageMain').classList.add('hidden');
-  document.getElementById('pageLogin').classList.remove('hidden');
-}
-async function getBarang() {
-  const res = await fetch(WEBAPP_URL + "?action=getBarang");
-  const json = await res.json();
-  listBarang = json.data;
-  const spn = document.getElementById('spnBarang');
-  spn.innerHTML = "";
-  listBarang.forEach((item, i) => {
-    spn.innerHTML += `<option value="${i}">${item[0]} - Isi: ${item[1]}</option>`;
-  });
-}
-function hitung() {
-  const index = document.getElementById('spnBarang').value;
-  if(index === "") return;
-  const isi = listBarang[index][1];
-  const box = document.getElementById('txtBox').value;
-  document.getElementById('lblTotal').innerText = "Total QTY: " + (isi * box);
-}
-function tambahItem() {
-  const index = document.getElementById('spnBarang').value;
-  listItems.push({"Nama Barang": listBarang[index][0], "Box": document.getElementById('txtBox').value});
+function logout(){ document.getElementById('pageMain').classList.add('hidden'); document.getElementById('pageLogin').classList.remove('hidden'); }
+
+function tambahBarang(){
+  listItems.push({"Nama Barang": document.getElementById('namaBarang').value, "Kirim": document.getElementById('kirim').value});
   tampilkanList();
-  document.getElementById('txtBox').value = "";
+  document.getElementById('namaBarang').value = "";
+  document.getElementById('kirim').value = "";
 }
 function tampilkanList(){
   let html = "";
   listItems.forEach((item, i) => {
-    html += `<div class="item">${item['Nama Barang']} - ${item['Box']} Box <button style="float:right; width:60px; padding:5px" onclick="hapusItem(${i})">X</button></div>`;
+    html += `<div class="item-box">${item['Nama Barang']} - ${item['Kirim']} Qty <button style="float:right;width:60px" onclick="hapusItem(${i})">X</button></div>`;
   });
-  document.getElementById('listItem').innerHTML = html;
+  document.getElementById('listBarang').innerHTML = html;
 }
 function hapusItem(i){ listItems.splice(i,1); tampilkanList(); }
-async function simpanTRX() {
-  if(listItems.length === 0) return alert("Tambah produk dulu");
+
+async function simpan() {
+  if(listItems.length === 0) return alert("Tambah barang dulu minimal 1");
   const payload = {
-    "_sheet": "TRX FG KIRIM",
+    "_sheet": document.getElementById('pilihSheet').value,
     "Tanggal": document.getElementById('tanggal').value,
     "Nomer Surat Jalan": document.getElementById('noSJ').value,
+    "No Polisi": document.getElementById('noPol').value,
     "Driver": document.getElementById('driver').value,
     "Keterangan": loginUser,
-    "No Polisi": "",
     "items": listItems
   };
   const res = await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify(payload)});
   const json = await res.json();
   if(json.status === "OK"){
-    window.open(json.pdfUrls[0], "_blank");
+    window.open(json.pdfUrls[0], "_blank"); // buka pdf pertama
     window.open("https://wa.me/?text=" + json.waText, "_blank");
-    listItems = []; tampilkanList(); alert("Sukses disimpan"); loadRiwayat();
+    alert("Sukses. " + listItems.length + " barang disimpan");
+    listItems = []; tampilkanList(); loadRiwayat();
   }
 }
-async function tambahProduk() {
-  const payload = {"_action": "addProduk", "nama": document.getElementById('namaProduk').value, "isi": document.getElementById('isiProduk').value};
-  const res = await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify(payload)});
-  const json = await res.json(); alert(json.msg); getBarang();
-}
+
 async function loadRiwayat(){
-  const tgl = document.getElementById('filterTanggal').value;
-  const sheet = document.getElementById('pilihSheet').value;
-  const res = await fetch(`${WEBAPP_URL}?action=getRiwayat&sheet=${sheet}&tgl=${tgl}`);
+  const res = await fetch(`${WEBAPP_URL}?action=getRiwayat&sheet=${document.getElementById('pilihSheet').value}&tgl=${document.getElementById('filterTanggal').value}`);
   const json = await res.json();
-  let html = "<table><tr><th>Tanggal</th><th>Barang</th><th>Kirim</th><th>Driver</th><th>Aksi</th></tr>";
+  let html = "<table><tr><th>SJ</th><th>Barang</th><th>Qty</th><th>Aksi</th></tr>";
   json.data.forEach(row => {
-    html += `<tr><td>${row.Tanggal}</td><td>${row['Nama Barang']}</td><td>${row.Kirim}</td><td>${row.Driver}</td>
-    <td><button style="width:50px" onclick='editData("${sheet}",${row._row})'>Edit</button>
-    <button style="width:50px" class="danger" onclick='deleteData("${sheet}",${row._row})'>Hapus</button></td></tr>`;
+    html += `<tr><td>${row['Nomer Surat Jalan']}</td><td>${row['Nama Barang']}</td><td>${row.Kirim}</td>
+    <td><button style="width:50px" onclick='editData("${document.getElementById('pilihSheet').value}",${row._row})'>Edit</button>
+    <button style="width:50px" class="danger" onclick='deleteData("${document.getElementById('pilihSheet').value}",${row._row})'>Hapus</button></td></tr>`;
   });
   html += "</table>"; document.getElementById('tabelRiwayat').innerHTML = html;
 }
 async function editData(sheet,row){
-  const baru = prompt("Masukkan Jumlah Kirim Baru:");
+  const baru = prompt("Qty Baru:");
   if(baru === null) return;
-  const payload = {"_action":"edit","_sheet":sheet,"_row":row,"Kirim":baru};
-  await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify(payload)});
-  alert("Data diupdate"); loadRiwayat();
+  await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify({"_action":"edit","_sheet":sheet,"_row":row,"Kirim":baru})});
+  alert("Diupdate"); loadRiwayat();
 }
 async function deleteData(sheet,row){
-  if(!confirm("Yakin hapus?")) return;
-  const payload = {"_action":"delete","_sheet":sheet,"_row":row};
-  await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify(payload)});
-  alert("Data dihapus"); loadRiwayat();
+  if(!confirm("Hapus?")) return;
+  await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify({"_action":"delete","_sheet":sheet,"_row":row})});
+  alert("Dihapus"); loadRiwayat();
 }
 </script>
 </body>
