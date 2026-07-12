@@ -7,24 +7,25 @@
   <style>
     *{box-sizing:border-box}
     body{font-family:Arial,sans-serif;padding:10px;background:#F0F2F5;margin:0;text-transform:uppercase}
- .tabs{display:flex;background:#DDD;border-radius:8px 8px 0 0;overflow:hidden;position:sticky;top:0;z-index:10}
- .tab{flex:1;padding:14px;text-align:center;background:#DDD;border:none;font-weight:bold;font-size:15px;cursor:pointer}
- .tab.active{background:#28A745;color:white}
- .card{background:white;padding:15px;border-radius:0 0 10px 10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);display:none;margin-bottom:70px}
- .card.active{display:block}
+.tabs{display:flex;background:#DDD;border-radius:8px 8px 0 0;overflow:hidden;position:sticky;top:0;z-index:10}
+.tab{flex:1;padding:14px;text-align:center;background:#DDD;border:none;font-weight:bold;font-size:15px;cursor:pointer}
+.tab.active{background:#28A745;color:white}
+.card{background:white;padding:15px;border-radius:0 0 10px 10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);display:none;margin-bottom:70px}
+.card.active{display:block}
     h3{margin-top:0;text-align:center;color:#333}
     label{font-weight:bold;font-size:14px;margin-top:5px;display:block}
     input,select,button{width:100%;padding:12px;margin:6px 0 12px 0;border:1px solid #CCC;border-radius:6px;font-size:16px;text-transform:uppercase}
     button{background:#28A745;color:white;border:none;font-weight:bold;cursor:pointer}
     button:active{background:#218838}
- .btn-wa{background:#25D366}.btn-wa:active{background:#1EBE5A}
-    #msg{text-align:center;font-weight:bold;margin-top:10px;font-size:15px;min-height:24px;position:fixed;bottom:10px;left:5%;width:90%;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.2)}
- .sukses{color:green}.gagal{color:red}
- .buktiArea{display:none;background:#F9FFF9;padding:15px;border:2px dashed #28A745;border-radius:8px;margin-top:15px}
- .buktiArea h4{text-align:center;margin:0 0 10px 0;color:#28A745}
- .buktiArea table{width:100%;border-collapse:collapse;font-size:14px;background:white}
- .buktiArea td{padding:8px;border-bottom:1px solid #EEE}
- .buktiArea td:first-child{font-weight:bold;width:40%}
+.btn-wa{background:#25D366}.btn-wa:active{background:#1EBE5A}
+.btn-wa:disabled{background:#AAA}
+    #msg{text-align:center;font-weight:bold;margin-top:10px;font-size:15px;min-height:24px;position:fixed;bottom:10px;left:5%;width:90%;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.2);z-index:99}
+.sukses{color:green}.gagal{color:red}
+.buktiArea{display:none;background:#F9FFF9;padding:15px;border:2px dashed #28A745;border-radius:8px;margin-top:15px}
+.buktiArea h4{text-align:center;margin:0 0 10px 0;color:#28A745}
+.buktiArea table{width:100%;border-collapse:collapse;font-size:14px;background:white}
+.buktiArea td{padding:8px;border-bottom:1px solid #EEE}
+.buktiArea td:first-child{font-weight:bold;width:40%}
   </style>
 </head>
 <body>
@@ -51,7 +52,7 @@
     <label>BOX</label><input type="number" name="box" placeholder="JUMLAH BOX" required>
     <label>QTY</label><input type="number" name="qty" placeholder="JUMLAH QTY" required>
     <label>KETERANGAN</label>
-    <select name="ket" required><option value="">PILIH</option><option>HASIL PRODUKSI</option><option>CUSTOMER</option><option>PANDAAN</option><option>KREBET</option></select>
+    <select name="ket" required><option value="">PILIH</option><option>CUSTOMER</option><option>PANDAAN</option><option>KREBET</option></select>
     <button type="submit">SIMPAN DATA</button>
   </form>
   <div id="buktiThermo" class="buktiArea"></div>
@@ -78,12 +79,12 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbyVCvLdqOVi3B2x3Zc20ihwnK3dJat0PjMb2e8LQQ3F3oZwd73XAiv54crvb84cr_GTxg/exec'
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyVCvLdqOVi3B2x3Zc20ihwnK3dJat0PjMb2e8LQQ3F3oZwd73XAiv54crvb84cr_GTxg/exec' // GANTI DENGAN URL APPS SCRIPT KAMU
 
   document.getElementById('tgl1').valueAsDate = new Date();
   document.getElementById('tgl2').valueAsDate = new Date();
 
-  // LOAD PRODUK - INI PENTING: JANGAN PAKAI NO-CORS
+  // LOAD PRODUK DARI SHEET MASTER
   fetch(scriptURL)
 .then(res => res.json())
 .then(produk => {
@@ -91,12 +92,12 @@
       let opt2 = document.getElementById('produk2');
       opt1.innerHTML = '<option value="">PILIH PRODUK</option>';
       opt2.innerHTML = '<option value="">PILIH PRODUK</option>';
-      if(produk.length == 0){
-        opt1.innerHTML = '<option>DATA PRODUK KOSONG DI SHEET MASTER</option>';
-        opt2.innerHTML = '<option>DATA PRODUK KOSONG DI SHEET MASTER</option>';
+      if(produk.length == 0 || produk[0].includes("ERROR")){
+        opt1.innerHTML = `<option>${produk[0] || 'DATA KOSONG'}</option>`;
+        opt2.innerHTML = `<option>${produk[0] || 'DATA KOSONG'}</option>`;
       }
       produk.forEach(p => { 
-        if(p!= ""){ 
+        if(p!= "" &&!p.includes("ERROR")){ 
           opt1.innerHTML += `<option>${p}</option>`; 
           opt2.innerHTML += `<option>${p}</option>`; 
         }
@@ -119,11 +120,11 @@
       const formData = new FormData(e.target);
       const msg = document.getElementById('msg');
       msg.className = ""; msg.innerText = "MENYIMPAN...";
-      // SIMPAN DATA TETAP PAKAI NO-CORS
       fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: formData})
-   .then(() => {
+  .then(() => {
           msg.className = "sukses"; msg.innerText = "✅ DATA TERSIMPAN!";
-          buatBukti(formData, buktiId); e.target.reset();
+          buatBukti(formData, buktiId); 
+          e.target.reset();
           document.getElementById('tgl1').valueAsDate = new Date();
           document.getElementById('tgl2').valueAsDate = new Date();
           setTimeout(()=>msg.innerText="",4000);
@@ -141,19 +142,40 @@
       html += `<tr><td>TGL</td><td>: ${formData.get('tgl')}</td></tr><tr><td>NO SJ</td><td>: ${formData.get('noSJ')}</td></tr><tr><td>PRODUK</td><td>: ${formData.get('produk2')}</td></tr><tr><td>KIRIM</td><td>: ${formData.get('kirim')}</td></tr><tr><td>KETERANGAN</td><td>: ${formData.get('ket2')}</td></tr><tr><td>NO POL</td><td>: ${formData.get('noPol') || '-'}</td></tr><tr><td>DRIVER</td><td>: ${formData.get('driver') || '-'}</td></tr>`;
     }
     html += `</table><p style="font-size:12px;text-align:center">WAKTU: ${new Date().toLocaleString('id-ID')}</p>`;
-    html += `<button class="btn-wa" onclick="downloadDanShare('${buktiId}')">📱 DOWNLOAD & SHARE KE WA</button>`;
+    html += `<button class="btn-wa" onclick="downloadDanShare(this, '${buktiId}')">📱 DOWNLOAD & SHARE KE WA</button>`;
     area.innerHTML = html; area.style.display = 'block'; area.scrollIntoView({behavior: "smooth"});
   }
 
-  function downloadDanShare(buktiId){
-    html2canvas(document.getElementById(buktiId), {scale: 2}).then(canvas => {
-      const link = document.createElement('a');
-      link.download = 'BUKTI-' + Date.now() + '.PNG'; link.href = canvas.toDataURL("image/png"); link.click();
-      setTimeout(()=>{ window.open(`https://wa.me/?text=${encodeURIComponent("BERIKUT BUKTI INPUT DATA FG")}`, '_blank'); }, 500)
-    });
+  function downloadDanShare(btn, buktiId){
+    const area = document.getElementById(buktiId);
+    btn.innerText = "MEMBUAT GAMBAR...";
+    btn.disabled = true;
+
+    html2canvas(area, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#F9FFF9",
+      logging: false
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'BUKTI-FG-' + Date.now() + '.PNG'; 
+        link.href = canvas.toDataURL("image/png"); 
+        link.click();
+        
+        setTimeout(()=>{ 
+          window.open(`https://wa.me/?text=${encodeURIComponent("BERIKUT BUKTI INPUT DATA FG")}`, '_blank'); 
+          btn.innerText = "📱 DOWNLOAD & SHARE KE WA";
+          btn.disabled = false;
+        }, 1000)
+      }).catch(err => {
+        alert("GAGAL BUAT GAMBAR: " + err);
+        btn.innerText = "📱 DOWNLOAD & SHARE KE WA";
+        btn.disabled = false;
+      });
   }
 
-  submitForm('formThermo', 'buktiThermo'); submitForm('formTrx', 'buktiTrx');
+  submitForm('formThermo', 'buktiThermo'); 
+  submitForm('formTrx', 'buktiTrx');
 </script>
 </body>
 </html>
