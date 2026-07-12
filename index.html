@@ -1,151 +1,181 @@
 <!DOCTYPE html>
-<html>
+<html lang="ID">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>App TRX Multi</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>INPUT PRODUKSI FG</title>
   <style>
-    body{font-family:Arial; padding:15px; background:#f5f5f5; margin:0}
- .card{background:white; padding:15px; border-radius:10px; margin-bottom:15px}
-    input, select, button{width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box}
-    button{background:#2196F3; color:white; border:none}
-    button.success{background:#4CAF50}
-    button.danger{background:#f44336}
-    table{width:100%; font-size:12px; border-collapse:collapse}
-    th,td{border:1px solid #ddd; padding:6px}
-    th{background:#2196F3; color:white}
- .hidden{display:none}
- .item-box{border:1px dashed #2196F3; padding:10px; margin:5px 0; border-radius:5px}
+    *{box-sizing:border-box}
+    body{font-family:Arial,sans-serif;padding:10px;background:#F0F2F5;margin:0;text-transform:uppercase}
+.tabs{display:flex;background:#DDD;border-radius:8px 8px 0 0;overflow:hidden;position:sticky;top:0;z-index:10}
+.tab{flex:1;padding:14px;text-align:center;background:#DDD;border:none;font-weight:bold;font-size:15px;cursor:pointer}
+.tab.active{background:#28A745;color:white}
+.card{background:white;padding:15px;border-radius:0 0 10px 10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);display:none;margin-bottom:70px}
+.card.active{display:block}
+    h3{margin-top:0;text-align:center;color:#333}
+    label{font-weight:bold;font-size:14px;margin-top:5px;display:block}
+    input,select,button{width:100%;padding:12px;margin:6px 0 12px 0;border:1px solid #CCC;border-radius:6px;font-size:16px;text-transform:uppercase}
+    button{background:#28A745;color:white;border:none;font-weight:bold;cursor:pointer}
+    button:active{background:#218838}
+.btn-wa{background:#25D366}.btn-wa:active{background:#1EBE5A}
+.btn-wa:disabled{background:#AAA}
+    #msg{text-align:center;font-weight:bold;margin-top:10px;font-size:15px;min-height:24px;position:fixed;bottom:10px;left:5%;width:90%;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.2);z-index:99}
+.sukses{color:green}.gagal{color:red}
+.buktiArea{display:none;background:#F9FFF9;padding:15px;border:2px dashed #28A745;border-radius:8px;margin-top:15px}
+.buktiArea h4{text-align:center;margin:0 0 10px 0;color:#28A745}
+.buktiArea table{width:100%;border-collapse:collapse;font-size:14px;background:white}
+.buktiArea td{padding:8px;border-bottom:1px solid #EEE}
+.buktiArea td:first-child{font-weight:bold;width:40%}
   </style>
 </head>
 <body>
 
-<div id="pageLogin" class="card"><h2>Login</h2>
-  <input type="text" id="user" placeholder="Username">
-  <input type="password" id="pass" placeholder="Password">
-  <button onclick="login()">Masuk</button>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('thermo')">HASIL THERMO</button>
+  <button class="tab" onclick="showTab('trxfg')">TRX FG</button>
 </div>
 
-<div id="pageMain" class="hidden">
-  <h2>Halo <span id="namaUser"></span></h2>
-  <div class="card">
-    <h3>Input SJ</h3>
-    <select id="pilihSheet"><option value="TRX FG KIRIM">TRX FG KIRIM</option><option value="HASIL THERMO">HASIL THERMO</option></select>
-    <input type="date" id="tanggal">
-    <input type="text" id="noSJ" placeholder="No Surat Jalan">
-    <input type="text" id="noPol" placeholder="No Polisi">
-    <input type="text" id="driver" placeholder="Driver">
-    <hr>
-    <h4>Tambah Barang</h4>
-    <select id="spnBarang"></select>
-    <input type="number" id="kirim" placeholder="Jumlah Kirim/QTY">
-    <button onclick="tambahBarang()">+ Tambah ke List</button>
-    <div id="listBarang"></div>
-    <button class="success" onclick="simpan()">Simpan Semua Barang</button>
-  </div>
-
-  <div class="card">
-    <h3>Riwayat</h3>
-    <input type="date" id="filterTanggal">
-    <button onclick="loadRiwayat()">Refresh</button>
-    <div id="tabelRiwayat"></div>
-  </div>
-  <button class="danger" onclick="logout()">Logout</button>
+<div id="thermo" class="card active">
+  <h3>INPUT HASIL THERMO</h3>
+  <form id="formThermo">
+    <input type="hidden" name="form" value="thermo">
+    <label>TANGGAL</label><input type="date" name="tanggal" id="tgl1" required>
+    <label>SHIFT</label><select name="shift" required><option value="">PILIH SHIFT</option><option>1</option><option>2</option><option>3</option></select>
+    <label>TF</label>
+    <select name="tf" required>
+      <option value="">PILIH TF</option>
+      <option>TF4</option><option>TF5</option><option>TF6</option><option>TF7</option><option>TF8</option>
+      <option>TF9</option><option>TF10</option><option>TF11P</option><option>TF11L</option>
+      <option>TF12</option><option>TF13</option><option>TF14</option><option>TF15</option><option>TF16</option>
+    </select>
+    <label>PRODUK</label><select name="produk" id="produk1" required><option>LOADING PRODUK...</option></select>
+    <label>BOX</label><input type="number" name="box" placeholder="JUMLAH BOX" required>
+    <label>QTY</label><input type="number" name="qty" placeholder="JUMLAH QTY" required>
+    <label>KETERANGAN</label>
+    <select name="ket" required><option value="">PILIH</option><option>CUSTOMER</option><option>PANDAAN</option><option>KREBET</option></select>
+    <button type="submit">SIMPAN DATA</button>
+  </form>
+  <div id="buktiThermo" class="buktiArea"></div>
 </div>
 
+<div id="trxfg" class="card">
+  <h3>INPUT TRX FG</h3>
+  <form id="formTrx">
+    <input type="hidden" name="form" value="trxfg">
+    <label>TGL</label><input type="date" name="tgl" id="tgl2" required>
+    <label>NO. SJ</label><input type="text" name="noSJ" placeholder="NO SURAT JALAN" required>
+    <label>PRODUK</label><select name="produk2" id="produk2" required><option>LOADING PRODUK...</option></select>
+    <label>KIRIM</label><input type="number" name="kirim" placeholder="JUMLAH KIRIM" required>
+    <label>KETERANGAN</label>
+    <select name="ket2" required><option value="">PILIH</option><option>CUSTOMER</option><option>PANDAAN</option><option>KREBET</option></select>
+    <label>NO POL</label><input type="text" name="noPol" placeholder="CONTOH: B 1234 CD">
+    <label>DRIVER</label><input type="text" name="driver" placeholder="NAMA DRIVER">
+    <button type="submit">SIMPAN DATA</button>
+  </form>
+  <div id="buktiTrx" class="buktiArea"></div>
+</div>
+
+<p id="msg"></p>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyVCvLdqOVi3B2x3Zc20ihwnK3dJat0PjMb2e8LQQ3F3oZwd73XAiv54crvb84cr_GTxg/exec"; // <-- GANTI INI SETELAH DEPLOY
-let loginUser = "";
-let listItems = [];
-let listBarangMaster = [];
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbyVCvLdqOVi3B2x3Zc20ihwnK3dJat0PjMb2e8LQQ3F3oZwd73XAiv54crvb84cr_GTxg/exec' // GANTI DENGAN URL APPS SCRIPT KAMU
 
-window.onload = function() {
-  document.getElementById('tanggal').valueAsDate = new Date();
-  document.getElementById('filterTanggal').valueAsDate = new Date();
-}
+  document.getElementById('tgl1').valueAsDate = new Date();
+  document.getElementById('tgl2').valueAsDate = new Date();
 
-async function login(){
-  const res = await fetch(`${WEBAPP_URL}?action=login&user=${document.getElementById('user').value}&pass=${document.getElementById('pass').value}`);
-  const json = await res.json();
-  if(json.status === "OK"){
-    loginUser = json.nama; document.getElementById('namaUser').innerText = loginUser;
-    document.getElementById('pageLogin').classList.add('hidden');
-    document.getElementById('pageMain').classList.remove('hidden');
-    getBarangMaster();
-    loadRiwayat();
-  } else { alert(json.msg); }
-}
-function logout(){ document.getElementById('pageMain').classList.add('hidden'); document.getElementById('pageLogin').classList.remove('hidden'); }
-
-async function getBarangMaster(){
-  const res = await fetch(WEBAPP_URL + "?action=getBarang");
-  const json = await res.json();
-  listBarangMaster = json.data;
-  const spn = document.getElementById('spnBarang');
-  spn.innerHTML = "<option value=''>--Pilih Barang--</option>";
-  listBarangMaster.forEach((item) => {
-    spn.innerHTML += `<option value="${item[0]}">${item[0]}</option>`;
+  // LOAD PRODUK DARI SHEET MASTER
+  fetch(scriptURL)
+.then(res => res.json())
+.then(produk => {
+      let opt1 = document.getElementById('produk1');
+      let opt2 = document.getElementById('produk2');
+      opt1.innerHTML = '<option value="">PILIH PRODUK</option>';
+      opt2.innerHTML = '<option value="">PILIH PRODUK</option>';
+      if(produk.length == 0 || produk[0].includes("ERROR")){
+        opt1.innerHTML = <option>${produk[0] || 'DATA KOSONG'}</option>;
+        opt2.innerHTML = <option>${produk[0] || 'DATA KOSONG'}</option>;
+      }
+      produk.forEach(p => { 
+        if(p!= "" &&!p.includes("ERROR")){ 
+          opt1.innerHTML += <option>${p}</option>; 
+          opt2.innerHTML += <option>${p}</option>; 
+        }
+      })
+  }).catch(err => { 
+      console.log(err);
+      document.getElementById('produk1').innerHTML = '<option>GAGAL KONEKSI KE APPS SCRIPT</option>'; 
   });
-}
 
-function tambahBarang(){
-  const nama = document.getElementById('spnBarang').value;
-  if(nama === "") return alert("Pilih barang dulu");
-  listItems.push({"Nama Barang": nama, "Kirim": document.getElementById('kirim').value});
-  tampilkanList();
-  document.getElementById('kirim').value = "";
-}
-function tampilkanList(){
-  let html = "";
-  listItems.forEach((item, i) => {
-    html += `<div class="item-box">${item['Nama Barang']} - ${item['Kirim']} Qty <button style="float:right;width:60px" onclick="hapusItem(${i})">X</button></div>`;
-  });
-  document.getElementById('listBarang').innerHTML = html;
-}
-function hapusItem(i){ listItems.splice(i,1); tampilkanList(); }
-
-async function simpan() {
-  if(listItems.length === 0) return alert("Tambah barang dulu minimal 1");
-  const payload = {
-    "_sheet": document.getElementById('pilihSheet').value,
-    "Tanggal": document.getElementById('tanggal').value,
-    "Nomer Surat Jalan": document.getElementById('noSJ').value,
-    "No Polisi": document.getElementById('noPol').value,
-    "Driver": document.getElementById('driver').value,
-    "Keterangan": loginUser,
-    "items": listItems
-  };
-  const res = await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify(payload)});
-  const json = await res.json();
-  if(json.status === "OK"){
-    window.open(json.pdfUrls[0], "_blank");
-    window.open("https://wa.me/?text=" + json.waText, "_blank");
-    alert("Sukses. " + listItems.length + " barang disimpan");
-    listItems = []; tampilkanList(); loadRiwayat();
+  function showTab(id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+    document.querySelector([onclick="showTab('${id}')"]).classList.add('active');
+    document.getElementById(id).classList.add('active');
   }
-}
 
-async function loadRiwayat(){
-  const res = await fetch(`${WEBAPP_URL}?action=getRiwayat&sheet=${document.getElementById('pilihSheet').value}&tgl=${document.getElementById('filterTanggal').value}`);
-  const json = await res.json();
-  let html = "<table><tr><th>SJ</th><th>Barang</th><th>Kirim</th><th>Aksi</th></tr>";
-  json.data.forEach(row => {
-    html += `<tr><td>${row['Nomer Surat Jalan']}</td><td>${row['Nama Barang']}</td><td>${row.Kirim}</td>
-    <td><button style="width:50px" onclick='editData("${document.getElementById('pilihSheet').value}",${row._row})'>Edit</button>
-    <button style="width:50px" class="danger" onclick='deleteData("${document.getElementById('pilihSheet').value}",${row._row})'>Hapus</button></td></tr>`;
-  });
-  html += "</table>"; document.getElementById('tabelRiwayat').innerHTML = html;
-}
-async function editData(sheet,row){
-  const baru = prompt("Qty Baru:");
-  if(baru === null) return;
-  await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify({"_action":"edit","_sheet":sheet,"_row":row,"Kirim":baru})});
-  alert("Diupdate"); loadRiwayat();
-}
-async function deleteData(sheet,row){
-  if(!confirm("Hapus?")) return;
-  await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify({"_action":"delete","_sheet":sheet,"_row":row})});
-  alert("Dihapus"); loadRiwayat();
-}
+  function submitForm(formId, buktiId){
+    document.getElementById(formId).addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const msg = document.getElementById('msg');
+      msg.className = ""; msg.innerText = "MENYIMPAN...";
+      fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: formData})
+  .then(() => {
+          msg.className = "sukses"; msg.innerText = "✅ DATA TERSIMPAN!";
+          buatBukti(formData, buktiId); 
+          e.target.reset();
+          document.getElementById('tgl1').valueAsDate = new Date();
+          document.getElementById('tgl2').valueAsDate = new Date();
+          setTimeout(()=>msg.innerText="",4000);
+      }).catch(() => { msg.className = "gagal"; msg.innerText = "❌ GAGAL KONEKSI" });
+    })
+  }
+
+  function buatBukti(formData, buktiId){
+    const area = document.getElementById(buktiId);
+    let judul = formData.get('form') == 'thermo'? 'HASIL THERMO' : 'TRX FG';
+    let html = <h4>BUKTI INPUT ${judul}</h4><table>;
+    if(formData.get('form') == 'thermo'){
+      html += <tr><td>TANGGAL</td><td>: ${formData.get('tanggal')}</td></tr><tr><td>SHIFT</td><td>: ${formData.get('shift')}</td></tr><tr><td>TF</td><td>: ${formData.get('tf')}</td></tr><tr><td>PRODUK</td><td>: ${formData.get('produk')}</td></tr><tr><td>BOX</td><td>: ${formData.get('box')}</td></tr><tr><td>QTY</td><td>: ${formData.get('qty')}</td></tr><tr><td>KETERANGAN</td><td>: ${formData.get('ket')}</td></tr>;
+    } else {
+      html += <tr><td>TGL</td><td>: ${formData.get('tgl')}</td></tr><tr><td>NO SJ</td><td>: ${formData.get('noSJ')}</td></tr><tr><td>PRODUK</td><td>: ${formData.get('produk2')}</td></tr><tr><td>KIRIM</td><td>: ${formData.get('kirim')}</td></tr><tr><td>KETERANGAN</td><td>: ${formData.get('ket2')}</td></tr><tr><td>NO POL</td><td>: ${formData.get('noPol') || '-'}</td></tr><tr><td>DRIVER</td><td>: ${formData.get('driver') || '-'}</td></tr>;
+    }
+    html += </table><p style="font-size:12px;text-align:center">WAKTU: ${new Date().toLocaleString('id-ID')}</p>;
+    html += <button class="btn-wa" onclick="downloadDanShare(this, '${buktiId}')">📱 DOWNLOAD & SHARE KE WA</button>;
+    area.innerHTML = html; area.style.display = 'block'; area.scrollIntoView({behavior: "smooth"});
+  }
+
+  function downloadDanShare(btn, buktiId){
+    const area = document.getElementById(buktiId);
+    btn.innerText = "MEMBUAT GAMBAR...";
+    btn.disabled = true;
+
+    html2canvas(area, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#F9FFF9",
+      logging: false
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'BUKTI-FG-' + Date.now() + '.PNG'; 
+        link.href = canvas.toDataURL("image/png"); 
+        link.click();
+        
+        setTimeout(()=>{ 
+          window.open(https://wa.me/?text=${encodeURIComponent("BERIKUT BUKTI INPUT DATA FG")}, '_blank'); 
+          btn.innerText = "📱 DOWNLOAD & SHARE KE WA";
+          btn.disabled = false;
+        }, 1000)
+      }).catch(err => {
+        alert("GAGAL BUAT GAMBAR: " + err);
+        btn.innerText = "📱 DOWNLOAD & SHARE KE WA";
+        btn.disabled = false;
+      });
+  }
+
+  submitForm('formThermo', 'buktiThermo'); 
+  submitForm('formTrx', 'buktiTrx');
 </script>
 </body>
 </html>
