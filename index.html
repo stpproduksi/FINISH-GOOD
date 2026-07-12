@@ -5,7 +5,7 @@
   <title>App TRX FG</title>
   <style>
     body{font-family:Arial; padding:15px; background:#f5f5f5; margin:0}
-   .card{background:white; padding:15px; border-radius:10px; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+  .card{background:white; padding:15px; border-radius:10px; margin-bottom:15px; box-shadow:0 2px 5px rgba(0,0,0,0.1)}
     input, select, button{width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box}
     button{background:#2196F3; color:white; border:none; cursor:pointer}
     button.danger{background:#f44336}
@@ -13,13 +13,12 @@
     table{width:100%; border-collapse:collapse; font-size:12px}
     th,td{border:1px solid #ddd; padding:6px; text-align:left}
     th{background:#2196F3; color:white}
-  .hidden{display:none}
-  .item{border:1px dashed #ccc; padding:10px; margin:5px 0; border-radius:5px}
+ .hidden{display:none}
+ .item{border:1px dashed #ccc; padding:10px; margin:5px 0; border-radius:5px}
   </style>
 </head>
 <body>
 
-<!-- HALAMAN LOGIN -->
 <div id="pageLogin" class="card">
   <h2>Login</h2>
   <input type="text" id="user" placeholder="Username">
@@ -27,10 +26,11 @@
   <button onclick="login()">Masuk</button>
 </div>
 
-<!-- HALAMAN UTAMA -->
 <div id="pageMain" class="hidden">
-  <h2>Input TRX FG</h2>
+  <h2>Halo <span id="namaUser"></span></h2>
+
   <div class="card">
+    <h3>Input TRX FG KIRIM</h3>
     <input type="date" id="tanggal">
     <input type="text" id="noSJ" placeholder="No Surat Jalan">
     <input type="text" id="driver" placeholder="Driver">
@@ -43,15 +43,16 @@
     <button class="success" onclick="simpanTRX()">Simpan Semua</button>
   </div>
 
-  <h2>Tambah Produk Master</h2>
   <div class="card">
+    <h3>Tambah Produk Master</h3>
     <input type="text" id="namaProduk" placeholder="Nama Produk">
     <input type="number" id="isiProduk" placeholder="Isi per Box">
     <button onclick="tambahProduk()">Simpan Produk</button>
   </div>
 
-  <h2>Riwayat Data</h2>
   <div class="card">
+    <h3>Riwayat Data</h3>
+    <select id="pilihSheet"><option value="TRX FG KIRIM">TRX FG KIRIM</option><option value="HASIL THERMO">HASIL THERMO</option></select>
     <input type="date" id="filterTanggal">
     <button onclick="loadRiwayat()">Cari</button>
     <div id="tabelRiwayat"></div>
@@ -73,24 +74,27 @@ window.onload = function() {
   document.getElementById('spnBarang').onchange = hitung;
 }
 
-function login(){
+async function login(){
   const user = document.getElementById('user').value;
   const pass = document.getElementById('pass').value;
   if(user === "" || pass === "") return alert("Isi username dan password");
-
-  // LOGIN SEDERHANA. BISA GANTI VALIDASI KE SHEET "USER"
-  loginUser = user;
-  document.getElementById('pageLogin').classList.add('hidden');
-  document.getElementById('pageMain').classList.remove('hidden');
-  getBarang();
-  loadRiwayat();
+  const res = await fetch(`${WEBAPP_URL}?action=login&user=${user}&pass=${pass}`);
+  const json = await res.json();
+  if(json.status === "OK"){
+    loginUser = json.nama;
+    document.getElementById('namaUser').innerText = loginUser;
+    document.getElementById('pageLogin').classList.add('hidden');
+    document.getElementById('pageMain').classList.remove('hidden');
+    getBarang();
+    loadRiwayat();
+  } else {
+    alert(json.msg);
+  }
 }
-
 function logout(){
   document.getElementById('pageMain').classList.add('hidden');
   document.getElementById('pageLogin').classList.remove('hidden');
 }
-
 async function getBarang() {
   const res = await fetch(WEBAPP_URL + "?action=getBarang");
   const json = await res.json();
@@ -101,7 +105,6 @@ async function getBarang() {
     spn.innerHTML += `<option value="${i}">${item[0]} - Isi: ${item[1]}</option>`;
   });
 }
-
 function hitung() {
   const index = document.getElementById('spnBarang').value;
   if(index === "") return;
@@ -109,39 +112,28 @@ function hitung() {
   const box = document.getElementById('txtBox').value;
   document.getElementById('lblTotal').innerText = "Total QTY: " + (isi * box);
 }
-
 function tambahItem() {
   const index = document.getElementById('spnBarang').value;
-  listItems.push({
-    "Nama Barang": listBarang[index][0],
-    "Box": document.getElementById('txtBox').value
-  });
+  listItems.push({"Nama Barang": listBarang[index][0], "Box": document.getElementById('txtBox').value});
   tampilkanList();
   document.getElementById('txtBox').value = "";
 }
-
 function tampilkanList(){
   let html = "";
   listItems.forEach((item, i) => {
-    html += `<div class="item">${item['Nama Barang']} - ${item['Box']} Box
-    <button style="float:right; width:60px; padding:5px" onclick="hapusItem(${i})">X</button></div>`;
+    html += `<div class="item">${item['Nama Barang']} - ${item['Box']} Box <button style="float:right; width:60px; padding:5px" onclick="hapusItem(${i})">X</button></div>`;
   });
   document.getElementById('listItem').innerHTML = html;
 }
-
-function hapusItem(i){
-  listItems.splice(i,1);
-  tampilkanList();
-}
-
+function hapusItem(i){ listItems.splice(i,1); tampilkanList(); }
 async function simpanTRX() {
   if(listItems.length === 0) return alert("Tambah produk dulu");
   const payload = {
-    "_sheet": "TRX FG",
+    "_sheet": "TRX FG KIRIM",
     "Tanggal": document.getElementById('tanggal').value,
     "Nomer Surat Jalan": document.getElementById('noSJ').value,
     "Driver": document.getElementById('driver').value,
-    "Keterangan": "Input by " + loginUser,
+    "Keterangan": loginUser,
     "No Polisi": "",
     "items": listItems
   };
@@ -150,61 +142,39 @@ async function simpanTRX() {
   if(json.status === "OK"){
     window.open(json.pdfUrls[0], "_blank");
     window.open("https://wa.me/?text=" + json.waText, "_blank");
-    listItems = [];
-    tampilkanList();
-    alert("Sukses disimpan");
-    loadRiwayat();
+    listItems = []; tampilkanList(); alert("Sukses disimpan"); loadRiwayat();
   }
 }
-
 async function tambahProduk() {
-  const payload = {
-    "_action": "addProduk",
-    "nama": document.getElementById('namaProduk').value,
-    "isi": document.getElementById('isiProduk').value
-  };
+  const payload = {"_action": "addProduk", "nama": document.getElementById('namaProduk').value, "isi": document.getElementById('isiProduk').value};
   const res = await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify(payload)});
-  const json = await res.json();
-  alert(json.msg);
-  getBarang();
+  const json = await res.json(); alert(json.msg); getBarang();
 }
-
 async function loadRiwayat(){
   const tgl = document.getElementById('filterTanggal').value;
-  const res = await fetch(`${WEBAPP_URL}?action=getRiwayat&sheet=TRX FG&tgl=${tgl}`);
+  const sheet = document.getElementById('pilihSheet').value;
+  const res = await fetch(`${WEBAPP_URL}?action=getRiwayat&sheet=${sheet}&tgl=${tgl}`);
   const json = await res.json();
   let html = "<table><tr><th>Tanggal</th><th>Barang</th><th>Kirim</th><th>Driver</th><th>Aksi</th></tr>";
   json.data.forEach(row => {
-    html += `<tr>
-      <td>${row.Tanggal}</td>
-      <td>${row['Nama Barang']}</td>
-      <td>${row.Kirim}</td>
-      <td>${row.Driver}</td>
-      <td>
-        <button style="width:50px" onclick='editData(${row._row})'>Edit</button>
-        <button style="width:50px" class="danger" onclick='deleteData(${row._row})'>Hapus</button>
-      </td>
-    </tr>`;
+    html += `<tr><td>${row.Tanggal}</td><td>${row['Nama Barang']}</td><td>${row.Kirim}</td><td>${row.Driver}</td>
+    <td><button style="width:50px" onclick='editData("${sheet}",${row._row})'>Edit</button>
+    <button style="width:50px" class="danger" onclick='deleteData("${sheet}",${row._row})'>Hapus</button></td></tr>`;
   });
-  html += "</table>";
-  document.getElementById('tabelRiwayat').innerHTML = html;
+  html += "</table>"; document.getElementById('tabelRiwayat').innerHTML = html;
 }
-
-async function editData(row){
+async function editData(sheet,row){
   const baru = prompt("Masukkan Jumlah Kirim Baru:");
   if(baru === null) return;
-  const payload = {"_action":"edit","_sheet":"TRX FG","_row":row,"Kirim":baru};
+  const payload = {"_action":"edit","_sheet":sheet,"_row":row,"Kirim":baru};
   await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify(payload)});
-  alert("Data diupdate");
-  loadRiwayat();
+  alert("Data diupdate"); loadRiwayat();
 }
-
-async function deleteData(row){
+async function deleteData(sheet,row){
   if(!confirm("Yakin hapus?")) return;
-  const payload = {"_action":"delete","_sheet":"TRX FG","_row":row};
+  const payload = {"_action":"delete","_sheet":sheet,"_row":row};
   await fetch(WEBAPP_URL, {method: "POST", body: JSON.stringify(payload)});
-  alert("Data dihapus");
-  loadRiwayat();
+  alert("Data dihapus"); loadRiwayat();
 }
 </script>
 </body>
