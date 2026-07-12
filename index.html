@@ -1,31 +1,30 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="ID">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Input Produksi FG</title>
+  <title>INPUT PRODUKSI FG</title>
   <style>
     *{box-sizing:border-box}
-    body{font-family:Arial,sans-serif;padding:10px;background:#f0f2f5;margin:0}
-    .tabs{display:flex;background:#ddd;border-radius:8px 8px 0 0;overflow:hidden;position:sticky;top:0;z-index:10}
-    .tab{flex:1;padding:14px;text-align:center;background:#ddd;border:none;font-weight:bold;font-size:15px;cursor:pointer}
-    .tab.active{background:#28a745;color:white}
-    .card{background:white;padding:15px;border-radius:0 0 10px 10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);display:none;margin-bottom:70px}
-    .card.active{display:block}
+    body{font-family:Arial,sans-serif;padding:10px;background:#F0F2F5;margin:0;text-transform:uppercase}
+ .tabs{display:flex;background:#DDD;border-radius:8px 8px 0 0;overflow:hidden;position:sticky;top:0;z-index:10}
+ .tab{flex:1;padding:14px;text-align:center;background:#DDD;border:none;font-weight:bold;font-size:15px;cursor:pointer}
+ .tab.active{background:#28A745;color:white}
+ .card{background:white;padding:15px;border-radius:0 0 10px 10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);display:none;margin-bottom:70px}
+ .card.active{display:block}
     h3{margin-top:0;text-align:center;color:#333}
     label{font-weight:bold;font-size:14px;margin-top:5px;display:block}
-    input,select,button{width:100%;padding:12px;margin:6px 0 12px 0;border:1px solid #ccc;border-radius:6px;font-size:16px}
-    button{background:#28a745;color:white;border:none;font-weight:bold;cursor:pointer}
+    input,select,button{width:100%;padding:12px;margin:6px 0 12px 0;border:1px solid #CCC;border-radius:6px;font-size:16px;text-transform:uppercase}
+    button{background:#28A745;color:white;border:none;font-weight:bold;cursor:pointer}
     button:active{background:#218838}
-    .btn-wa{background:#25D366} .btn-wa:active{background:#1ebe5a}
+ .btn-wa{background:#25D366}.btn-wa:active{background:#1EBE5A}
     #msg{text-align:center;font-weight:bold;margin-top:10px;font-size:15px;min-height:24px;position:fixed;bottom:10px;left:5%;width:90%;background:white;padding:10px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.2)}
-    .sukses{color:green}.gagal{color:red}
-    
-    .buktiArea{display:none;background:#f9fff9;padding:15px;border:2px dashed #28a745;border-radius:8px;margin-top:15px}
-    .buktiArea h4{text-align:center;margin:0 0 10px 0;color:#28a745}
-    .buktiArea table{width:100%;border-collapse:collapse;font-size:14px;background:white}
-    .buktiArea td{padding:8px;border-bottom:1px solid #eee}
-    .buktiArea td:first-child{font-weight:bold;width:40%}
+ .sukses{color:green}.gagal{color:red}
+ .buktiArea{display:none;background:#F9FFF9;padding:15px;border:2px dashed #28A745;border-radius:8px;margin-top:15px}
+ .buktiArea h4{text-align:center;margin:0 0 10px 0;color:#28A745}
+ .buktiArea table{width:100%;border-collapse:collapse;font-size:14px;background:white}
+ .buktiArea td{padding:8px;border-bottom:1px solid #EEE}
+ .buktiArea td:first-child{font-weight:bold;width:40%}
   </style>
 </head>
 <body>
@@ -35,93 +34,41 @@
   <button class="tab" onclick="showTab('trxfg')">TRX FG</button>
 </div>
 
-<!-- FORM 1: HASIL THERMO -->
 <div id="thermo" class="card active">
-  <h3>Input HASIL THERMO</h3>
+  <h3>INPUT HASIL THERMO</h3>
   <form id="formThermo">
     <input type="hidden" name="form" value="thermo">
-    <label>TANGGAL</label>
-    <input type="date" name="tanggal" id="tgl1" required>
-
-    <label>SHIFT</label>
-    <select name="shift" required>
-      <option value="">Pilih Shift</option>
-      <option value="1">1</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-    </select>
-
+    <label>TANGGAL</label><input type="date" name="tanggal" id="tgl1" required>
+    <label>SHIFT</label><select name="shift" required><option value="">PILIH SHIFT</option><option>1</option><option>2</option><option>3</option></select>
     <label>TF</label>
     <select name="tf" required>
-      <option value="">Pilih TF</option>
-      <option value="TF4">TF4</option>
-      <option value="TF5">TF5</option>
-      <option value="TF6">TF6</option>
-      <option value="TF7">TF7</option>
-      <option value="TF8">TF8</option>
-      <option value="TF9">TF9</option>
-      <option value="TF10">TF10</option>
-      <option value="TF11P">TF11P</option>
-      <option value="TF11L">TF11L</option>
-      <option value="TF12">TF12</option>
-      <option value="TF13">TF13</option>
-      <option value="TF14">TF14</option>
-      <option value="TF15">TF15</option>
-      <option value="TF16">TF16</option>
+      <option value="">PILIH TF</option>
+      <option>TF4</option><option>TF5</option><option>TF6</option><option>TF7</option><option>TF8</option>
+      <option>TF9</option><option>TF10</option><option>TF11P</option><option>TF11L</option>
+      <option>TF12</option><option>TF13</option><option>TF14</option><option>TF15</option><option>TF16</option>
     </select>
-
-    <label>PRODUK</label>
-    <select name="produk" id="produk1" required><option>Loading Produk...</option></select>
-
-    <label>BOX</label>
-    <input type="number" name="box" placeholder="Jumlah Box" required>
-
-    <label>QTY</label>
-    <input type="number" name="qty" placeholder="Jumlah Qty/Pcs" required>
-
+    <label>PRODUK</label><select name="produk" id="produk1" required><option>LOADING PRODUK...</option></select>
+    <label>BOX</label><input type="number" name="box" placeholder="JUMLAH BOX" required>
+    <label>QTY</label><input type="number" name="qty" placeholder="JUMLAH QTY" required>
     <label>KETERANGAN</label>
-    <select name="ket" required>
-      <option value="">Pilih Keterangan</option>
-      <option value="Customer">Customer</option>
-      <option value="Pandaan">Pandaan</option>
-      <option value="Krebet">Krebet</option>
-    </select>
-    
+    <select name="ket" required><option value="">PILIH</option><option>CUSTOMER</option><option>PANDAAN</option><option>KREBET</option></select>
     <button type="submit">SIMPAN DATA</button>
   </form>
   <div id="buktiThermo" class="buktiArea"></div>
 </div>
 
-<!-- FORM 2: TRX FG -->
 <div id="trxfg" class="card">
-  <h3>Input TRX FG</h3>
+  <h3>INPUT TRX FG</h3>
   <form id="formTrx">
     <input type="hidden" name="form" value="trxfg">
-    <label>TGL</label>
-    <input type="date" name="tgl" id="tgl2" required>
-
-    <label>NO. SJ</label>
-    <input type="text" name="noSJ" placeholder="No Surat Jalan" required>
-
-    <label>PRODUK</label>
-    <select name="produk2" id="produk2" required><option>Loading Produk...</option></select>
-
-    <label>KIRIM</label>
-    <input type="number" name="kirim" placeholder="Jumlah Kirim" required>
-
+    <label>TGL</label><input type="date" name="tgl" id="tgl2" required>
+    <label>NO. SJ</label><input type="text" name="noSJ" placeholder="NO SURAT JALAN" required>
+    <label>PRODUK</label><select name="produk2" id="produk2" required><option>LOADING PRODUK...</option></select>
+    <label>KIRIM</label><input type="number" name="kirim" placeholder="JUMLAH KIRIM" required>
     <label>KETERANGAN</label>
-    <select name="ket2" required>
-      <option value="">Pilih Keterangan</option>
-      <option value="Customer">Customer</option>
-      <option value="Pandaan">Pandaan</option>
-      <option value="Krebet">Krebet</option>
-    </select>
-
-    <label>NO POL</label>
-    <input type="text" name="noPol" placeholder="Contoh: B 1234 CD">
-
-    <label>DRIVER</label>
-    <input type="text" name="driver" placeholder="Nama Driver">
+    <select name="ket2" required><option value="">PILIH</option><option>CUSTOMER</option><option>PANDAAN</option><option>KREBET</option></select>
+    <label>NO POL</label><input type="text" name="noPol" placeholder="CONTOH: B 1234 CD">
+    <label>DRIVER</label><input type="text" name="driver" placeholder="NAMA DRIVER">
     <button type="submit">SIMPAN DATA</button>
   </form>
   <div id="buktiTrx" class="buktiArea"></div>
@@ -131,27 +78,32 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwLb6CgFslm4ftGcvho1on6woxtiBzGB8ipsbPQzqcQ-SkGpjf0wwG-9yVg4nH65gXzKg/exec' // <-- GANTI DENGAN URL APPS SCRIPT KAMU
-  
+  const scriptURL = '1PYOwbaYB4wSI68SMPBP9b5elbBc3DV70cPpQbDs-qDo' // GANTI INI
+
   document.getElementById('tgl1').valueAsDate = new Date();
   document.getElementById('tgl2').valueAsDate = new Date();
 
+  // LOAD PRODUK - INI PENTING: JANGAN PAKAI NO-CORS
   fetch(scriptURL)
-  .then(res => res.json())
-  .then(produk => {
+.then(res => res.json())
+.then(produk => {
       let opt1 = document.getElementById('produk1');
       let opt2 = document.getElementById('produk2');
-      opt1.innerHTML = '<option value="">Pilih Produk</option>';
-      opt2.innerHTML = '<option value="">Pilih Produk</option>';
-      produk.forEach(p => {
-        if(p != ""){ 
-          opt1.innerHTML += `<option>${p}</option>`;
-          opt2.innerHTML += `<option>${p}</option>`;
+      opt1.innerHTML = '<option value="">PILIH PRODUK</option>';
+      opt2.innerHTML = '<option value="">PILIH PRODUK</option>';
+      if(produk.length == 0){
+        opt1.innerHTML = '<option>DATA PRODUK KOSONG DI SHEET MASTER</option>';
+        opt2.innerHTML = '<option>DATA PRODUK KOSONG DI SHEET MASTER</option>';
+      }
+      produk.forEach(p => { 
+        if(p!= ""){ 
+          opt1.innerHTML += `<option>${p}</option>`; 
+          opt2.innerHTML += `<option>${p}</option>`; 
         }
       })
-  }).catch(err => {
-      document.getElementById('produk1').innerHTML = '<option>Gagal load produk</option>';
-      document.getElementById('produk2').innerHTML = '<option>Gagal load produk</option>';
+  }).catch(err => { 
+      console.log(err);
+      document.getElementById('produk1').innerHTML = '<option>GAGAL KONEKSI KE APPS SCRIPT</option>'; 
   });
 
   function showTab(id){
@@ -166,65 +118,42 @@
       e.preventDefault();
       const formData = new FormData(e.target);
       const msg = document.getElementById('msg');
-      msg.className = ""; msg.innerText = "Menyimpan...";
-      
+      msg.className = ""; msg.innerText = "MENYIMPAN...";
+      // SIMPAN DATA TETAP PAKAI NO-CORS
       fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: formData})
-      .then(() => {
-          msg.className = "sukses"; msg.innerText = "✅ Data tersimpan!";
-          buatBukti(formData, buktiId);
-          e.target.reset();
+   .then(() => {
+          msg.className = "sukses"; msg.innerText = "✅ DATA TERSIMPAN!";
+          buatBukti(formData, buktiId); e.target.reset();
           document.getElementById('tgl1').valueAsDate = new Date();
           document.getElementById('tgl2').valueAsDate = new Date();
           setTimeout(()=>msg.innerText="",4000);
-      }).catch(() => { msg.className = "gagal"; msg.innerText = "❌ Gagal koneksi ke server" });
+      }).catch(() => { msg.className = "gagal"; msg.innerText = "❌ GAGAL KONEKSI" });
     })
   }
-  
+
   function buatBukti(formData, buktiId){
     const area = document.getElementById(buktiId);
-    let judul = formData.get('form') == 'thermo' ? 'HASIL THERMO' : 'TRX FG';
+    let judul = formData.get('form') == 'thermo'? 'HASIL THERMO' : 'TRX FG';
     let html = `<h4>BUKTI INPUT ${judul}</h4><table>`;
-    
     if(formData.get('form') == 'thermo'){
-      html += `<tr><td>Tanggal</td><td>: ${formData.get('tanggal')}</td></tr>`;
-      html += `<tr><td>Shift</td><td>: ${formData.get('shift')}</td></tr>`;
-      html += `<tr><td>TF</td><td>: ${formData.get('tf')}</td></tr>`;
-      html += `<tr><td>Produk</td><td>: ${formData.get('produk')}</td></tr>`;
-      html += `<tr><td>Box</td><td>: ${formData.get('box')}</td></tr>`;
-      html += `<tr><td>Qty</td><td>: ${formData.get('qty')}</td></tr>`;
-      html += `<tr><td>Keterangan</td><td>: ${formData.get('ket')}</td></tr>`;
+      html += `<tr><td>TANGGAL</td><td>: ${formData.get('tanggal')}</td></tr><tr><td>SHIFT</td><td>: ${formData.get('shift')}</td></tr><tr><td>TF</td><td>: ${formData.get('tf')}</td></tr><tr><td>PRODUK</td><td>: ${formData.get('produk')}</td></tr><tr><td>BOX</td><td>: ${formData.get('box')}</td></tr><tr><td>QTY</td><td>: ${formData.get('qty')}</td></tr><tr><td>KETERANGAN</td><td>: ${formData.get('ket')}</td></tr>`;
     } else {
-      html += `<tr><td>Tgl</td><td>: ${formData.get('tgl')}</td></tr>`;
-      html += `<tr><td>No SJ</td><td>: ${formData.get('noSJ')}</td></tr>`;
-      html += `<tr><td>Produk</td><td>: ${formData.get('produk2')}</td></tr>`;
-      html += `<tr><td>Kirim</td><td>: ${formData.get('kirim')}</td></tr>`;
-      html += `<tr><td>Keterangan</td><td>: ${formData.get('ket2')}</td></tr>`;
-      html += `<tr><td>No Pol</td><td>: ${formData.get('noPol') || '-'}</td></tr>`;
-      html += `<tr><td>Driver</td><td>: ${formData.get('driver') || '-'}</td></tr>`;
+      html += `<tr><td>TGL</td><td>: ${formData.get('tgl')}</td></tr><tr><td>NO SJ</td><td>: ${formData.get('noSJ')}</td></tr><tr><td>PRODUK</td><td>: ${formData.get('produk2')}</td></tr><tr><td>KIRIM</td><td>: ${formData.get('kirim')}</td></tr><tr><td>KETERANGAN</td><td>: ${formData.get('ket2')}</td></tr><tr><td>NO POL</td><td>: ${formData.get('noPol') || '-'}</td></tr><tr><td>DRIVER</td><td>: ${formData.get('driver') || '-'}</td></tr>`;
     }
-    html += `</table><p style="font-size:12px;text-align:center;margin-top:10px">Waktu: ${new Date().toLocaleString('id-ID')}</p>`;
+    html += `</table><p style="font-size:12px;text-align:center">WAKTU: ${new Date().toLocaleString('id-ID')}</p>`;
     html += `<button class="btn-wa" onclick="downloadDanShare('${buktiId}')">📱 DOWNLOAD & SHARE KE WA</button>`;
-    area.innerHTML = html;
-    area.style.display = 'block';
-    area.scrollIntoView({behavior: "smooth"});
+    area.innerHTML = html; area.style.display = 'block'; area.scrollIntoView({behavior: "smooth"});
   }
 
   function downloadDanShare(buktiId){
-    const element = document.getElementById(buktiId);
-    html2canvas(element, {scale: 2}).then(canvas => {
+    html2canvas(document.getElementById(buktiId), {scale: 2}).then(canvas => {
       const link = document.createElement('a');
-      link.download = 'bukti-input-' + Date.now() + '.png';
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-      setTimeout(()=>{
-        const pesan = encodeURIComponent("Berikut Bukti Input Data FG");
-        window.open(`https://wa.me/?text=${pesan}`, '_blank');
-      }, 500)
+      link.download = 'BUKTI-' + Date.now() + '.PNG'; link.href = canvas.toDataURL("image/png"); link.click();
+      setTimeout(()=>{ window.open(`https://wa.me/?text=${encodeURIComponent("BERIKUT BUKTI INPUT DATA FG")}`, '_blank'); }, 500)
     });
   }
 
-  submitForm('formThermo', 'buktiThermo');
-  submitForm('formTrx', 'buktiTrx');
+  submitForm('formThermo', 'buktiThermo'); submitForm('formTrx', 'buktiTrx');
 </script>
 </body>
 </html>
