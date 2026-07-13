@@ -220,7 +220,7 @@ function shareGambarLangsung(namaFile){
   }
   canvas.toBlob((blob) => {
     const file = new File([blob], namaFile + ".png", { type: "image/png" });
-    const shareData = { files: [file], title: 'Bukti Input', text: 'Bukti Input Produksi' };
+    const shareData = { files: [file], title: 'Bukti Input', text: 'sTp LAWANG' };
     if (navigator.canShare && navigator.canShare(shareData)) {
       navigator.share(shareData).catch(err => console.log('Share dibatalkan', err));
     } else {
